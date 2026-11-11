@@ -4020,6 +4020,17 @@
  "points": "points.ply",
  "orbit_path": "orbit_path.json",
  "models": {
+  "nerf": {
+   "label": "NeRF",
+   "file": "models/nerf.npz",
+   "kind": "nerf",
+   "background": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "size_mb": 4.2
+  },
   "3dgs": {
    "label": "3D Gaussian Splatting",
    "file": "models/3dgs.npz",
@@ -4029,7 +4040,7 @@
     1.0,
     1.0
    ],
-   "size_mb": 20.5
+   "size_mb": 16.0
   },
   "mip": {
    "label": "Mip-Splatting",
@@ -4040,7 +4051,7 @@
     1.0,
     1.0
    ],
-   "size_mb": 23.5
+   "size_mb": 21.6
   },
   "tensorf": {
    "label": "TensoRF",
@@ -4062,7 +4073,7 @@
     0.0,
     0.0
    ],
-   "size_mb": 79.8,
+   "size_mb": 41.1,
    "note": "stored with spherical harmonics up to degree 1 to stay under GitHub's file limit"
   }
  },
@@ -4079,75 +4090,94 @@
   }
  ],
  "metrics": {
-  "3dgs": {
-   "method": "3dgs",
+  "nerf": {
+   "method": "nerf",
    "test_views": 16,
-   "n_gaussians": 194821,
-   "model_mb": 46.1,
-   "fps": 366.0,
+   "n_params": 1191688,
+   "iterations": 43760,
+   "model_mb": 13.7,
+   "fps": 0.042,
    "resolution": [
     750,
     1000
    ],
    "mean": {
-    "psnr": 27.52907375361866,
-    "ssim": 0.9556858167052269,
-    "lpips": 0.06394856312545016
+    "psnr": 26.585167393952204,
+    "ssim": 0.930945560336113,
+    "lpips": 0.13178013172000647
+   },
+   "video": "/l/users/anas.khan/cv802_sp3/results/videos/nerf_person.mp4",
+   "train_seconds": 3600
+  },
+  "3dgs": {
+   "method": "3dgs",
+   "test_views": 16,
+   "n_gaussians": 149284,
+   "model_mb": 35.3,
+   "fps": 372.6,
+   "resolution": [
+    750,
+    1000
+   ],
+   "mean": {
+    "psnr": 26.63171759592837,
+    "ssim": 0.9514618515968323,
+    "lpips": 0.07242793939076364
    },
    "ours_vs_official_psnr": {
-    "mean": 105.7162314142023,
-    "min": 95.56300078129878
+    "mean": 105.34878326362954,
+    "min": 98.64147551596801
    },
-   "ours_fps_cuda": 4.32,
+   "ours_fps_cuda": 4.63,
    "zoom": {
     "x0.25": {
-     "psnr": 24.253132239623717,
-     "ssim": 0.9364587068557739,
-     "lpips": 0.04786304081790149
+     "psnr": 23.71381344436743,
+     "ssim": 0.9303480088710785,
+     "lpips": 0.055121511803008616
     },
     "x1.6": {
-     "psnr": 27.15232783445889,
-     "ssim": 0.9546783342957497,
-     "lpips": 0.0821396796964109
+     "psnr": 26.29006215138778,
+     "ssim": 0.9516393579542637,
+     "lpips": 0.08954741794150323
     }
    },
-   "video": "/l/users/anas.khan/cv802_sp3/results/videos/3dgs_person.mp4",
-   "train_seconds": 435
+   "video": "/l/users/anas.khan/cv802_sp3/results/videos/3dgs_person_rand.mp4",
+   "train_seconds": 935
   },
   "mip": {
    "method": "mip",
    "test_views": 16,
-   "n_gaussians": 216802,
-   "model_mb": 52.1,
-   "fps": 594.4,
+   "n_gaussians": 196841,
+   "model_mb": 47.3,
+   "fps": 568.9,
    "resolution": [
     750,
     1000
    ],
    "mean": {
-    "psnr": 27.532925921832955,
-    "ssim": 0.9565066434442997,
-    "lpips": 0.06415388721507043
+    "psnr": 27.621983663743844,
+    "ssim": 0.9575036764144897,
+    "lpips": 0.06672442401759326
    },
    "ours_vs_official_psnr": {
-    "mean": 103.5302066278685,
-    "min": 79.00411135401961
+    "mean": 102.79311532942518,
+    "min": 84.80603451581106
    },
-   "ours_fps_cuda": 5.78,
+   "ours_fps_cuda": 5.07,
    "zoom": {
     "x0.25": {
-     "psnr": 28.6292899240785,
-     "ssim": 0.9687019102275372,
-     "lpips": 0.027701242652256042
+     "psnr": 28.625851309014863,
+     "ssim": 0.9691990278661251,
+     "lpips": 0.028266962035559118
     },
     "x1.6": {
-     "psnr": 27.285083454128312,
-     "ssim": 0.9568860307335854,
-     "lpips": 0.08110112638678402
+     "psnr": 27.374971999248444,
+     "ssim": 0.957887277007103,
+     "lpips": 0.08374484861269593
     }
    },
-   "video": "/l/users/anas.khan/cv802_sp3/results/videos/mip_person.mp4",
-   "train_seconds": 593
+   "video": "/l/users/anas.khan/cv802_sp3/results/videos/mip_person_rand.mp4",
+   "train_seconds": 1839
   },
   "tensorf": {
    "method": "tensorf",
@@ -4170,26 +4200,27 @@
   "3dgs_full": {
    "method": "3dgs",
    "test_views": 16,
-   "n_gaussians": 1775737,
-   "model_mb": 420.0,
-   "fps": 97.9,
+   "n_gaussians": 909671,
+   "model_mb": 215.1,
+   "fps": 124.5,
    "resolution": [
     750,
     1000
    ],
    "mean": {
-    "psnr": 19.7113849029617,
-    "ssim": 0.7157376408576965,
-    "lpips": 0.3771258555352688
+    "psnr": 17.95606911406947,
+    "ssim": 0.6714446432888508,
+    "lpips": 0.4406001064926386
    },
-   "video": "/l/users/anas.khan/cv802_sp3/results/videos/3dgs_full.mp4",
-   "train_seconds": 1953
+   "video": "/l/users/anas.khan/cv802_sp3/results/videos/3dgs_full_rand.mp4",
+   "train_seconds": 2086
   }
  },
  "conversion_check_psnr": {
+  "nerf": 66.9,
   "3dgs": 67.5,
   "mip": 67.3,
   "tensorf": 64.8,
-  "3dgs_full": 29.1
+  "3dgs_full": 26.0
  }
 }

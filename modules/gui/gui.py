@@ -578,7 +578,94 @@ class AppWindow:
         ctrls.add_child(self._mesh_list)
         ctrls.add_child(self._mesh_show)
         ctrls.add_child(gui.Label("Textured triangles, rasterised in this view"))
+
+        # Sub-project 2 in the app: our Screened Poisson on the loaded point cloud
+        self._extract_res = gui.Combobox()
+        for r in ("128^3 grid (fast)", "256^3 grid (detailed)"):
+            self._extract_res.add_item(r)
+        grid = gui.VGrid(2, 0.25 * em)
+        grid.add_child(gui.Label("Poisson"))
+        grid.add_child(self._extract_res)
+        ctrls.add_child(grid)
+        h = gui.Horiz(0.25 * em)
+        extract = gui.Button("Extract mesh")
+        extract.horizontal_padding_em = 0.2
+        extract.set_on_clicked(self._on_extract_mesh)
+        save = gui.Button("Save mesh...")
+        save.horizontal_padding_em = 0.2
+        save.set_on_clicked(self._on_save_mesh)
+        h.add_child(extract)
+        h.add_child(save)
+        ctrls.add_child(h)
+        self._extract_status = gui.Label("from the open point cloud (Sub-project 1)")
+        ctrls.add_child(self._extract_status)
+        self._extracted = None
         return ctrls
+
+    def _points_for_mesh(self):
+        """The open point cloud: a COLMAP result of Sub-project 1 if one is loaded, else the novel-view results' cloud."""
+        try:
+            pcd = self.colmap_api.pcd if self.colmap_api.estimate_done() else None
+            if pcd is not None and len(pcd.points) > 0:
+                return np.asarray(pcd.points), np.asarray(pcd.colors), "COLMAP result"
+        except Exception:
+            pass
+        if self._nvs is not None:
+            pcd = o3d.io.read_point_cloud(str(self._nvs.root / self._nvs.meta["points"]))
+            return np.asarray(pcd.points), np.asarray(pcd.colors), "results point cloud"
+        return None
+
+    def _on_extract_mesh(self):
+        pts = self._points_for_mesh()
+        if pts is None:
+            self._message("Extract mesh", "Open a COLMAP result or the novel-view results first (File menu).")
+            return
+        xyz, rgb, source = pts
+        res = 128 if self._extract_res.selected_index == 0 else 256
+        self._extract_status.text = "Poisson on %d points (%s), %d^3 ..." % (len(xyz), source, res)
+
+        def job():
+            try:
+                from modules.surface.extract import extract_mesh
+                V, F, C, info = extract_mesh(xyz, rgb, res=res, log=lambda *a: None)
+                mesh = o3d.geometry.TriangleMesh(o3d.utility.Vector3dVector(V), o3d.utility.Vector3iVector(F.astype(np.int32)))
+                mesh.vertex_colors = o3d.utility.Vector3dVector(np.clip(C, 0, 1))
+                mesh.compute_vertex_normals()
+                err = None
+            except Exception as error:
+                mesh, info, err = None, None, error
+
+            def done():
+                if err is not None:
+                    self._extract_status.text = "Poisson failed: %s" % err
+                    return
+                self._extracted = mesh
+                label = "Poisson %d^3 (extracted here)" % res
+                self._mesh_list.add_item(label)
+                self._mesh_paths.append(mesh)
+                self._mesh_list.selected_index = len(self._mesh_paths) - 1
+                self.load_mesh(mesh)
+                self._extract_status.text = "%d triangles in %.0f s" % (info["triangles"], info["seconds"])
+            gui.Application.instance.post_to_main_thread(self.window, done)
+        threading.Thread(target=job, daemon=True).start()
+
+    def _on_save_mesh(self):
+        if self._extracted is None:
+            self._message("Save mesh", "Extract a mesh first.")
+            return
+        dlg = gui.FileDialog(gui.FileDialog.SAVE, "Save the mesh as", self.window.theme)
+        dlg.add_filter(".ply", "PLY mesh (.ply)")
+        dlg.add_filter(".obj", "OBJ mesh (.obj)")
+        dlg.set_on_cancel(self._on_file_dialog_cancel)
+        dlg.set_on_done(self._on_save_mesh_done)
+        self.window.show_dialog(dlg)
+
+    def _on_save_mesh_done(self, path):
+        self.window.close_dialog()
+        if not path.lower().endswith((".ply", ".obj")):
+            path += ".ply"
+        ok = o3d.io.write_triangle_mesh(path, self._extracted)
+        self._extract_status.text = ("saved " if ok else "could not save ") + osp.basename(path)
 
     def _message(self, title, text):
         self.window.show_message_box(title, text)
@@ -841,10 +928,19 @@ class AppWindow:
             self._on_nvs_live(False)
 
     def load_mesh(self, path):
+        """path: a mesh file, or an Open3D TriangleMesh (one extracted in this window)"""
         if self._scene.scene.has_geometry("__mesh__"):
             self._scene.scene.remove_geometry("__mesh__")
-        model = o3d.io.read_triangle_model(path)
-        if model is not None and len(model.meshes) > 0:
+        if isinstance(path, o3d.geometry.TriangleMesh):
+            mat = rendering.MaterialRecord()
+            mat.shader = Settings.LIT
+            self._scene.scene.add_geometry("__mesh__", path, mat)
+            model = None
+        else:
+            model = o3d.io.read_triangle_model(path)
+        if isinstance(path, o3d.geometry.TriangleMesh):
+            pass
+        elif model is not None and len(model.meshes) > 0:
             self._scene.scene.add_model("__mesh__", model)
         else:
             mesh = o3d.io.read_triangle_mesh(path)

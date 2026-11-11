@@ -5,6 +5,7 @@
 1. every model in the results folder loads and renders a held-out view on the CPU (as on a laptop without CUDA)
 2. the GUI's conversion from the Open3D view camera back to an OpenCV camera returns the camera that was set
    (uses Open3D's offscreen renderer; skipped if this machine has no headless OpenGL)
+3. the GUI's Sub-project 2 mesh extraction (our Screened Poisson) runs on the results' point cloud
 """
 import sys
 import time
@@ -54,5 +55,20 @@ try:
     print("camera conversion %s  |dR| %.1e  |dt| %.1e  focal error %.2e" % ("ok " if good else "BAD", err_r, err_t, err_f))
 except Exception as e:  # noqa: BLE001
     print("camera conversion skipped (no headless OpenGL here): %s" % e)
+# Sub-project 2 in the GUI: our Screened Poisson on the results' point cloud (128^3, CPU)
+try:
+    import open3d as o3d
+    import modules.surface.poisson as P
+    from modules.surface.extract import extract_mesh
+    P.DEV = torch.device("cpu")
+    pcd = o3d.io.read_point_cloud(str(folder / s.meta["points"]))
+    t0 = time.time()
+    V, F, C, info = extract_mesh(np.asarray(pcd.points), np.asarray(pcd.colors), res=128, log=lambda *a: None)
+    good = len(F) > 10000 and np.isfinite(V).all()
+    ok &= good
+    print("Poisson mesh      %s  %d triangles in %.1f s (CPU)" % ("ok " if good else "BAD", len(F), time.time() - t0))
+except Exception as e:  # noqa: BLE001
+    ok = False
+    print("Poisson mesh      BAD  %s" % e)
 print("ALL OK" if ok else "FAILED")
 sys.exit(0 if ok else 1)

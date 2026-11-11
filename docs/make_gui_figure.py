@@ -60,10 +60,16 @@ eye = s.meta["centre"] + 2.2 * (np.asarray(far.center) - s.meta["centre"])      
 from modules.nvs.cameras import look_at  # noqa: E402
 wide = look_at(eye, s.meta["centre"], s.meta["up"], W, H, far.fx)
 panels = [("Points + photo cameras", offscreen(geoms, wide))]
-meshes = s.meta.get("meshes", [])
-if meshes:
-    model = o3d.io.read_triangle_model(str(folder / meshes[0]["file"]))
-    panels.append(("Mesh (Assignment 2), rasterised", offscreen([("mesh", model, None)], cam)))
+# Sub-project 2 inside the app: our Screened Poisson on the open point cloud, rasterised by Open3D
+from modules.surface.extract import extract_mesh  # noqa: E402
+pcd = o3d.io.read_point_cloud(str(folder / s.meta["points"]))
+V, F, C, info = extract_mesh(np.asarray(pcd.points), np.asarray(pcd.colors), res=256, log=lambda *a: None)
+mesh = o3d.geometry.TriangleMesh(o3d.utility.Vector3dVector(V), o3d.utility.Vector3iVector(F.astype(np.int32)))
+mesh.vertex_colors = o3d.utility.Vector3dVector(np.clip(C, 0, 1))
+mesh.compute_vertex_normals()
+lit = rendering.MaterialRecord()
+lit.shader = "defaultLit"
+panels.append(("Mesh extracted in the app (Poisson)", offscreen([("mesh", mesh, lit)], cam)))
 img, _ = s.render("3dgs", cam)
 panels.append(("Novel view: 3DGS", img))
 if "mip" in s.models:

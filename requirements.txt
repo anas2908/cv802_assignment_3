@@ -5,4 +5,5 @@ torch>=2.2            # CUDA, Apple GPU (MPS) or CPU
 imageio>=2.31
 imageio-ffmpeg>=0.4.9 # MP4 export
 pillow>=10.0
+scipy>=1.10           # Sub-project 2 Poisson: neighbours, spanning tree, components
 # Optional, only to run Sub-project 1's SfM from the same GUI:  pip install pycolmap

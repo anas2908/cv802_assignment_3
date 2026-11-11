@@ -11,10 +11,10 @@ STATUS, LOGS = SP3 / "status", SP3 / "logs"
 STEPS = [
     ("setup", "Environments + official code", 20),
     ("data", "Data: person on white + full room", 5),
-    ("train_3dgs", "Train 3D Gaussian Splatting", 30),
-    ("train_mip", "Train Mip-Splatting", 40),
+    ("train_3dgs", "Train 3DGS (random start)", 12),
+    ("train_mip", "Train Mip-Splatting (random start)", 15),
     ("train_tensorf", "Train TensoRF", 40),
-    ("train_3dgs_full", "Train 3DGS, full room (extra)", 35),
+    ("train_3dgs_full", "Train 3DGS room (random start)", 35),
     ("train_nerf", "Train NeRF (nerf-pytorch)", 75),
     ("eval", "Scores on 16 held-out photos", 15),
     ("videos", "Result MP4s along the camera path", 20),

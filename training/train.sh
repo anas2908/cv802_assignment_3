@@ -11,11 +11,11 @@ trap 'status "${STEP}" 0 failed "see logs/${STEP}.log"' ERR
 T0=$(date +%s)
 case "${METHOD}" in
   3dgs)
-    BG=(); [[ "${SCENE}" == person ]] && BG=(-w)
+    BG=(); [[ "${SCENE}" == person* ]] && BG=(-w)
     ( cd "${TP}/gaussian-splatting" && "${GS_PY}" train.py -s "${DATA}/${SCENE}" -m "${RUN}" --eval "${BG[@]}" --disable_viewer \
         --test_iterations 7000 30000 --save_iterations 30000 "$@" ) > "${LOG}" 2>&1 ;;
   mip)
-    BG=(); [[ "${SCENE}" == person ]] && BG=(-w)
+    BG=(); [[ "${SCENE}" == person* ]] && BG=(-w)
     ( cd "${TP}/mip-splatting" && "${MIP_PY}" train.py -s "${DATA}/${SCENE}" -m "${RUN}" --eval "${BG[@]}" -r 1 --port $((6100 + RANDOM % 800)) \
         --test_iterations 7000 30000 --save_iterations 30000 "$@" ) > "${LOG}" 2>&1 ;;
   tensorf)

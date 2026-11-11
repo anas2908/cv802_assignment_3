@@ -33,10 +33,10 @@ for sub in ("models", "photos", "meshes", "videos"):
 
 MODELS = [  # id, label, run folder, kind, background
     ("nerf", "NeRF", "nerf_person", "nerf", [1.0, 1.0, 1.0]),
-    ("3dgs", "3D Gaussian Splatting", "3dgs_person", "3dgs", [1.0, 1.0, 1.0]),
-    ("mip", "Mip-Splatting", "mip_person", "mip", [1.0, 1.0, 1.0]),
+    ("3dgs", "3D Gaussian Splatting", "3dgs_person_rand", "3dgs", [1.0, 1.0, 1.0]),     # random start: images only
+    ("mip", "Mip-Splatting", "mip_person_rand", "mip", [1.0, 1.0, 1.0]),
     ("tensorf", "TensoRF", "tensorf_person", "tensorf", [1.0, 1.0, 1.0]),
-    ("3dgs_full", "3DGS, full room (extra)", "3dgs_full", "3dgs", [0.0, 0.0, 0.0]),
+    ("3dgs_full", "3DGS, full room (extra)", "3dgs_full_rand", "3dgs", [0.0, 0.0, 0.0]),
 ]
 
 
@@ -178,8 +178,12 @@ if zf.exists():
         meshes.append({"label": label, "file": "meshes/%s.glb" % key, "triangles": int(len(FV))})
 
 shutil.copy2(SP3 / "data" / "orbit_path.json", OUT / "orbit_path.json")
-for mp4 in sorted((SP3 / "results" / "videos").glob("*.mp4")):
-    shutil.copy2(mp4, OUT / "videos" / mp4.name)
+for old in (OUT / "videos").glob("*.mp4"):
+    old.unlink()
+for mid, label, run, kind, bg in MODELS:        # the main runs' orbit videos, named by method
+    mp4 = SP3 / "results" / "videos" / (run + ".mp4")
+    if mp4.exists():
+        shutil.copy2(mp4, OUT / "videos" / (mid + ".mp4"))
 
 metrics = {}
 for mid, label, run, kind, bg in MODELS:

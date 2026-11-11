@@ -1,4 +1,23 @@
 {
+ "nerf": {
+  "method": "nerf",
+  "test_views": 16,
+  "n_params": 1191688,
+  "iterations": 43760,
+  "model_mb": 13.7,
+  "fps": 0.042,
+  "resolution": [
+   750,
+   1000
+  ],
+  "mean": {
+   "psnr": 26.585167393952204,
+   "ssim": 0.930945560336113,
+   "lpips": 0.13178013172000647
+  },
+  "video": "/l/users/anas.khan/cv802_sp3/results/videos/nerf_person.mp4",
+  "train_seconds": 3600
+ },
  "tensorf": {
   "method": "tensorf",
   "test_views": 16,
@@ -18,6 +37,94 @@
   "train_seconds": 2492
  },
  "3dgs": {
+  "method": "3dgs",
+  "test_views": 16,
+  "n_gaussians": 149284,
+  "model_mb": 35.3,
+  "fps": 372.6,
+  "resolution": [
+   750,
+   1000
+  ],
+  "mean": {
+   "psnr": 26.63171759592837,
+   "ssim": 0.9514618515968323,
+   "lpips": 0.07242793939076364
+  },
+  "ours_vs_official_psnr": {
+   "mean": 105.34878326362954,
+   "min": 98.64147551596801
+  },
+  "ours_fps_cuda": 4.63,
+  "zoom": {
+   "x0.25": {
+    "psnr": 23.71381344436743,
+    "ssim": 0.9303480088710785,
+    "lpips": 0.055121511803008616
+   },
+   "x1.6": {
+    "psnr": 26.29006215138778,
+    "ssim": 0.9516393579542637,
+    "lpips": 0.08954741794150323
+   }
+  },
+  "video": "/l/users/anas.khan/cv802_sp3/results/videos/3dgs_person_rand.mp4",
+  "train_seconds": 935
+ },
+ "mip": {
+  "method": "mip",
+  "test_views": 16,
+  "n_gaussians": 196841,
+  "model_mb": 47.3,
+  "fps": 568.9,
+  "resolution": [
+   750,
+   1000
+  ],
+  "mean": {
+   "psnr": 27.621983663743844,
+   "ssim": 0.9575036764144897,
+   "lpips": 0.06672442401759326
+  },
+  "ours_vs_official_psnr": {
+   "mean": 102.79311532942518,
+   "min": 84.80603451581106
+  },
+  "ours_fps_cuda": 5.07,
+  "zoom": {
+   "x0.25": {
+    "psnr": 28.625851309014863,
+    "ssim": 0.9691990278661251,
+    "lpips": 0.028266962035559118
+   },
+   "x1.6": {
+    "psnr": 27.374971999248444,
+    "ssim": 0.957887277007103,
+    "lpips": 0.08374484861269593
+   }
+  },
+  "video": "/l/users/anas.khan/cv802_sp3/results/videos/mip_person_rand.mp4",
+  "train_seconds": 1839
+ },
+ "3dgs_full": {
+  "method": "3dgs",
+  "test_views": 16,
+  "n_gaussians": 909671,
+  "model_mb": 215.1,
+  "fps": 124.5,
+  "resolution": [
+   750,
+   1000
+  ],
+  "mean": {
+   "psnr": 17.95606911406947,
+   "ssim": 0.6714446432888508,
+   "lpips": 0.4406001064926386
+  },
+  "video": "/l/users/anas.khan/cv802_sp3/results/videos/3dgs_full_rand.mp4",
+  "train_seconds": 2086
+ },
+ "3dgs_pcl": {
   "method": "3dgs",
   "test_views": 16,
   "n_gaussians": 194821,
@@ -52,7 +159,7 @@
   "video": "/l/users/anas.khan/cv802_sp3/results/videos/3dgs_person.mp4",
   "train_seconds": 435
  },
- "mip": {
+ "mip_pcl": {
   "method": "mip",
   "test_views": 16,
   "n_gaussians": 216802,
@@ -87,7 +194,7 @@
   "video": "/l/users/anas.khan/cv802_sp3/results/videos/mip_person.mp4",
   "train_seconds": 593
  },
- "3dgs_full": {
+ "3dgs_full_pcl": {
   "method": "3dgs",
   "test_views": 16,
   "n_gaussians": 1775737,

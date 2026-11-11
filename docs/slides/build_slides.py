@@ -228,14 +228,15 @@ pic(s, FIG / "fig_inputs.jpg", 0.42, 1.05, w=9.16, h=2.4)
 bullets(s, ["The same 125 photos as Assignments 1 and 2 (4 iPhone lenses + video frames)",
             "Cameras from Assignment 1 (VGGSfM), undistorted to pinhole",
             "Person masks → person on a white background; resized to 1000 px",
-            "109 photos for training, 16 held out for scoring (every 8th, the 3DGS rule)"], 0.42, 3.55, 9.2, 1.7, size=15, gap=3)
+            "109 photos for training, 16 held out for scoring (every 8th, the 3DGS rule)",
+            "No point cloud: Gaussians start from random points"], 0.42, 3.55, 9.2, 1.7, size=15, gap=3)
 
 # 4 methods
 s = slide("Methods")
 rows = [["Method", "Venue", "Year", "Scene stored as"],
         ["NeRF", "ECCV", "2020", "one neural network (8 layers × 256)"],
         ["TensoRF", "ECCV", "2022", "a grid split into planes and lines"],
-        ["3D Gaussian Splatting (3DGS)", "ACM TOG / SIGGRAPH", "2023", "~200k coloured 3D blobs"],
+        ["3D Gaussian Splatting (3DGS)", "ACM TOG / SIGGRAPH", "2023", "~150k coloured 3D blobs"],
         ["Mip-Splatting", "CVPR", "2024", "3DGS + two anti-aliasing filters"]]
 table(s, rows, 0.42, 1.1, [3.0, 2.0, 0.8, 3.36], size=13, row_h=0.42, align=[PP_ALIGN.LEFT] * 4)
 text(s, "Official code (NeRF: nerf-pytorch, the standard PyTorch version of the authors' TensorFlow code), same photos and cameras.\nTensoRF, 3DGS, Mip-Splatting: 30,000 steps. NeRF: 60 minutes of training (the paper trains for 200,000+ steps).", 0.42, 3.4, 9.2, 0.8, size=13)
@@ -249,8 +250,8 @@ bullets(s, ["Space is a 3D grid of features: density (how solid) and colour",
             "  C = Σ  Tᵢ · (1 − e^(−σᵢ δᵢ)) · cᵢ ,   Tᵢ = how much light still gets through",
             "Small network turns the feature + viewing direction into a colour"], 0.42, 1.05, 9.2, 4.2, size=17)
 s = slide("3D Gaussian Splatting: how it works")
-bullets(s, ["The scene is ~200k 3D Gaussians (soft ellipsoids): position, size, rotation, opacity, colour",
-            "Start from our point cloud (Assignment 1); add, split and delete blobs while training",
+bullets(s, ["The scene is ~150k 3D Gaussians (soft ellipsoids): position, size, rotation, opacity, colour",
+            "Start from 100k random points (input = photos + cameras only); add, split, delete blobs while training",
             "To draw: project each blob to the screen (a 2D ellipse), sort front to back, blend:",
             "  Σ′ = J W Σ Wᵀ Jᵀ        (3D shape → 2D shape on screen)",
             "  C = Σ  cᵢ αᵢ Πⱼ₍ⱼ<ᵢ₎ (1 − αⱼ)",
@@ -261,13 +262,14 @@ bullets(s, ["3DGS, plus two filters so a blob is never sharper than the camera c
             "  Σ ← Σ + s²·I        (no blobs thinner than one pixel of any photo)",
             "2D filter: on screen, each blob is blurred to at least one pixel",
             "Why it matters: zoom out and 3DGS blobs become too thin → flicker and jagged edges",
-            "Same quality at the training size; better when the camera moves closer or further"], 0.42, 1.05, 9.2, 4.2, size=17)
+            "Here also better at the training size, and far better when the camera moves away"], 0.42, 1.05, 9.2, 4.2, size=17)
 
 # 8 experiments
 s = slide("Experiments")
 exp = ["5 trainings: NeRF, TensoRF, 3DGS, Mip-Splatting (person), 3DGS full room (extra)",
        "Scores on the 16 held-out photos: PSNR, SSIM, LPIPS",
        "Zoom test: render 3DGS and Mip-Splatting at ¼ size and 1.6× size",
+       "Ablation: Gaussians from random points vs from the Assignment 1 point cloud",
        "Result video: same 8 s orbit for every method",
        "Check: our GUI renderer vs the official renderer (same pixels?)"]
 bullets(s, exp, 0.42, 1.0, 5.0, 3.9, size=15, gap=8)
@@ -287,11 +289,11 @@ rows = [["Method", "PSNR ↑", "SSIM ↑", "LPIPS ↓", "Training ↓", "FPS ↑
 for k, n in NAMES:
     d = N[k]
     rows.append([n, f"{d['mean']['psnr']:.2f}", f"{d['mean']['ssim']:.3f}", f"{d['mean']['lpips']:.3f}", dur(d["train_seconds"]),
-                 f"{d['fps']:.1f}" if d["fps"] < 10 else f"{d['fps']:.0f}", prims(d), f"{d['model_mb']:.0f}"])
+                 f"{d['fps']:.2f}" if d["fps"] < 10 else f"{d['fps']:.0f}", prims(d), f"{d['model_mb']:.0f}"])
 table(s, rows, 0.42, 1.2, [1.75, 0.95, 0.95, 1.0, 1.15, 0.85, 1.25, 1.26], size=13, row_h=0.42,
       fills=rank_fills(rows, {1: 1, 2: 1, 3: -1, 4: -1, 5: 1}))
-text(s, "16 held-out photos, 750×1000. PSNR in dB. FPS = images per second on the GPU. Primitives: Gaussians (3DGS, Mip) or numbers in the grid (TensoRF).",
-     0.42, 3.15, 9.2, 0.6, size=11)
+text(s, "16 held-out photos, 750×1000. PSNR in dB. FPS = images per second on the GPU. Primitives: Gaussians (3DGS, Mip) or numbers in the network / grid (NeRF, TensoRF). Gaussians start from random points.",
+     0.42, 3.55, 9.2, 0.6, size=11)
 
 # 11 quality vs time and speed
 s = slide("Quality vs time and speed")
@@ -321,15 +323,29 @@ if all("zoom" in N[k] for k in ("3dgs", "mip") if k in N):
     text(s, "Left: rendered at ¼ size, enlarged ×6 (pixels kept square). Table: PSNR (dB), 16 held-out photos; ¼ = photo averaged down, 1.6× = original 1600 px photos.", 6.05, 3.15, 3.5, 1.2, size=11)
     text(s, "Zoomed out, 3DGS blobs get thinner than a pixel and the image breaks up; Mip-Splatting stays clean.", 6.05, 4.05, 3.5, 1.0, size=13)
 
+# ablation: where the Gaussians start
+if all(k in N for k in ("3dgs", "mip", "3dgs_pcl", "mip_pcl")):
+    s = slide("Ablation: random start vs point cloud")
+    rows = [["Start", "3DGS PSNR ↑", "3DGS LPIPS ↓", "Mip PSNR ↑", "Mip LPIPS ↓", "Room PSNR ↑"]]
+    for lab, g, m, r in (("100k random points (main)", "3dgs", "mip", "3dgs_full"), ("Assignment 1 point cloud", "3dgs_pcl", "mip_pcl", "3dgs_full_pcl")):
+        rows.append([lab, f"{N[g]['mean']['psnr']:.2f}", f"{N[g]['mean']['lpips']:.3f}", f"{N[m]['mean']['psnr']:.2f}",
+                     f"{N[m]['mean']['lpips']:.3f}", f"{N[r]['mean']['psnr']:.2f}" if r in N else "—"])
+    fills = rank_fills(rows, {1: 1, 2: -1, 3: 1, 4: -1, 5: 1})
+    fills = {k: v for k, v in fills.items() if v == GREEN}
+    table(s, rows, 0.42, 1.2, [2.8, 1.3, 1.3, 1.25, 1.25, 1.26], size=13, row_h=0.45, fills=fills)
+    bullets(s, ["Main results use only the photos and their cameras: every Gaussian starts at a random position",
+                "The point cloud of Assignment 1 is only a better starting guess; training does the rest",
+                "Same photos, cameras, 30,000 steps and scoring in both rows"], 0.42, 2.85, 9.2, 2.2, size=15, gap=6)
+
 # 13 result videos
 s = slide("Result videos (preset 8 s orbit)")
 y = 1.0
 for k, n in NAMES:
     f = FIG / f"fig_orbit_{k}.jpg"
     if f.exists():
-        text(s, n, 0.42, y + 0.45, 1.5, 0.4, size=13)
-        pic(s, f, 1.9, y, w=7.7, h=1.3)
-        y += 1.38
+        text(s, n, 0.42, y + 0.33, 1.5, 0.4, size=13)
+        pic(s, f, 1.9, y, w=7.7, h=0.98)
+        y += 1.02
 text(s, "Frames 0, 40, 80, 120, 160, 200 of 240. The full videos are in results/videos/.", 0.42, 5.15, 7, 0.3, size=11)
 
 # 14 extra: full room
@@ -339,7 +355,7 @@ if (FIG / "fig_orbit_3dgs_full.jpg").exists():
     d = N.get("3dgs_full")
     if d:
         bullets(s, [f"Same photos without the person masks: {d['mean']['psnr']:.2f} dB PSNR on the held-out photos",
-                    f"{d['n_gaussians'] / 1e6:.2f}M Gaussians (person alone: ~200k), trained in {d['train_seconds'] / 60:.0f} min",
+                    f"{d['n_gaussians'] / 1e6:.2f}M Gaussians (person alone: ~150k), trained in {d['train_seconds'] / 60:.0f} min",
                     "The room is only seen from where the photos were taken, so views far from them break up"],
                 0.42, 3.85, 9.2, 1.4, size=15, gap=4)
 
@@ -350,12 +366,12 @@ if gui_fig.exists():
     pic(s, gui_fig, 0.42, 0.95, w=9.16, h=2.25)
     text(s, "What the GUI's 3D view draws, from one held-out photo's camera (offscreen render of the same code)", 0.42, 3.2, 9.2, 0.3,
          size=10, align=PP_ALIGN.CENTER)
-bullets(s, ["Same Open3D app as Assignment 1, new panels",
+bullets(s, ["One app for Assignments 1, 2 and 3 (the course starter)",
             "File > Open novel-view results; method menu",
             "Drag / pan / zoom → the novel view follows",
             "Held-out photo vs render, one click"], 0.42, 3.55, 4.5, 1.7, size=14, gap=3)
 bullets(s, ["Keyframes or preset orbit → Export MP4",
-            "Assignment 2 meshes rasterised in the same view",
+            "Assignment 2 in the app: Extract mesh (our Poisson) + rasterised",
             "Runs on a laptop: our PyTorch renderers",
             "  (CUDA, Apple GPU or CPU)"], 5.1, 3.55, 4.5, 1.7, size=14, gap=3)
 
@@ -379,10 +395,11 @@ best_k = max(NAMES, key=lambda kn: N[kn[0]]["mean"]["psnr"])
 fast_k = min(NAMES, key=lambda kn: N[kn[0]]["train_seconds"])
 items = [f"Best quality on held-out photos: {best_k[1]} ({N[best_k[0]]['mean']['psnr']:.2f} dB)",
          f"Fastest to train: {fast_k[1]} ({dur(N[fast_k[0]]['train_seconds'])}); Gaussians draw in real time",
-         "At the training size 3DGS ≈ Mip-Splatting; zoomed out Mip-Splatting is clearly better"]
+         "Mip-Splatting is best at every size; zoomed out by far"]
 if "zoom" in N.get("mip", {}):
     items[-1] += f" (+{N['mip']['zoom']['x0.25']['psnr'] - N['3dgs']['zoom']['x0.25']['psnr']:.1f} dB)"
-items += ["Clean masks matter: the white background makes the person easy to learn",
+items += ["No point cloud needed: from random points Mip-Splatting is even slightly better; 3DGS loses ~0.9 dB",
+          "Clean masks matter: the white background makes the person easy to learn",
           "NeRF: same rendering idea as TensoRF, but one big network → slowest to train and to draw"]
 bullets(s, items, 0.42, 1.0, 9.2, 4.2, size=16, gap=8)
 

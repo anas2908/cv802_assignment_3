@@ -13,8 +13,13 @@ The 125 photos of a person from Assignments 1 and 2, with the cameras recovered 
 plus an extra **3DGS of the whole room** (the same photos without the person masks). All methods are trained with
 their official code; NeRF for one hour (the paper trains for 200k+ steps).
 
-The code is built **on the course starter code** (the Open3D GUI of Assignment 1, `main.py` and `modules/`): the same
-window now opens trained novel-view models, renders them live from the 3D view's camera while you drag, compares a
+**Input: the photos and their cameras only.** The Gaussian methods start from 100k random points in the scene box
+(as the 3DGS code does for its synthetic scenes), not from the Assignment 1 point cloud. As an ablation, the same
+3DGS / Mip-Splatting / room runs started from the Assignment 1 point cloud are scored too.
+
+The code is built **on the course starter code** (the Open3D GUI of Assignment 1, `main.py` and `modules/`), so one
+window covers the whole capture project: Sub-project 1 (SfM, `modules/colmap`), Sub-project 2 (surface extraction,
+`modules/surface`) and Sub-project 3 (novel views, `modules/nvs`). The window opens trained novel-view models, renders them live from the 3D view's camera while you drag, compares a
 render with the real held-out photo, exports MP4 videos along a preset or hand-made camera path, and rasterises the
 Assignment 2 meshes.
 
@@ -40,8 +45,11 @@ In the window (panel on the right):
     (*Still* slider)
   - *Held-out photos*: jump to one of the 16 photos not used in training; *Show the real photo* to compare
   - *Add keyframe* / *Clear*, *Path* (preset orbit or my keyframes), *Seconds*, **Export MP4…**
-- **Meshes (Sub-project 2)**: the Screened Poisson and NKSR meshes, textured, drawn by Open3D's rasteriser in the
-  same view (also *File > Open mesh…* for any `.obj/.ply/.glb`)
+- **Meshes (Sub-project 2)**: **Extract mesh** runs our Sub-project 2 Screened Poisson (own implementation,
+  [`modules/surface/`](modules/surface/)) on the open point cloud (a COLMAP result or the results' cloud; 128³ grid
+  in ~10 s on a laptop CPU, or 256³) and **Save mesh…** writes it as `.ply`/`.obj`; the textured Sub-project 2
+  meshes (Screened Poisson, NKSR) are in the list too. All are drawn by Open3D's rasteriser in the same view
+  (*File > Open mesh…* opens any `.obj/.ply/.glb`)
 - The Assignment 1 panels (COLMAP, camera list, point size …) are unchanged.
 
 `python main.py <folder>` also opens a COLMAP result (Assignment 1) and `python main.py <mesh>` a mesh.
@@ -69,7 +77,9 @@ window.
 ```bash
 bash training/setup_envs.sh                     # official code + environments (3DGS, Mip-Splatting, TensoRF)
 python training/prep_scenes.py --src <2DGS scene of Sub-project 2> --out $DATA   # photos, masks, cameras, split
-bash training/train.sh train_3dgs 3dgs person    # also: mip person, tensorf person, 3dgs full, nerf person --minutes 60
+python training/make_random_init.py $DATA        # person_rand / full_rand: same photos and cameras, random starting points
+bash training/train.sh train_3dgs 3dgs person_rand   # also: mip person_rand, 3dgs full_rand, tensorf person, nerf person --minutes 60
+                                                    # (ablation: 3dgs person, mip person, 3dgs full = start from the point cloud)
 python training/eval_gs.py --method 3dgs -m <run> --check-ours --zoom --hires <1600px photos> --path orbit.json --video out.mp4
 python training/eval_tensorf.py --ckpt <run>/tensorf_person.th --data $DATA/person --out <run>/eval
 python training/export_bundle.py <SP3 root> results    # models (.npz), cameras, photos, meshes, videos -> results/
@@ -84,6 +94,7 @@ in tmux.
 ```text
 main.py, modules/gui/      course starter GUI (Assignment 1) + novel-view and mesh panels
 modules/colmap/            Assignment 1 SfM (unchanged)
+modules/surface/           Assignment 2 Screened Poisson (own implementation: normals, GPU/CPU solver, marching tetrahedra)
 modules/nvs/               cameras and paths, PyTorch renderers (Gaussians, TensoRF), results-folder session
 training/                  data preparation, training, evaluation, export, progress dashboard
 results/                   trained models (.npz), cameras, held-out photos, SP2 meshes, result videos

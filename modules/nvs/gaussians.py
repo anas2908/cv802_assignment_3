@@ -155,11 +155,8 @@ def render(model: GaussianModel, cam, bg=(1.0, 1.0, 1.0), batch=None, kernel_siz
     pc = model.means @ R.T + t
     z = pc[:, 2]
     tanx, tany = W / (2 * fx), H / (2 * fy)
-    keep = z > 0.2
-    # frustum test of the official code (1.3 x the field of view) to drop far-off Gaussians early
-    keep &= (pc[:, 0].abs() < 1.3 * tanx * z + 1e-6) | (z > 0) & (pc[:, 0].abs() < 2 * tanx * z)
-    keep &= (pc[:, 1].abs() < 1.3 * tany * z + 1e-6) | (z > 0) & (pc[:, 1].abs() < 2 * tany * z)
-    idx = torch.nonzero(keep).squeeze(1)
+    keep = z > 0.2            # like the official rasteriser, drop only what is behind the near plane: a large Gaussian
+    idx = torch.nonzero(keep).squeeze(1)   # centred outside the view can still cover it (tiles are clipped below)
     if idx.numel() == 0:
         return torch.ones(H, W, 3, device=dev) * torch.tensor(bg, device=dev)
     pc, z = pc[idx], z[idx]

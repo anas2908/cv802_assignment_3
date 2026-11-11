@@ -14,7 +14,8 @@ ROOT = Path(__file__).resolve().parents[1]
 SP3 = Path(sys.argv[1])
 OUT = ROOT / "docs" / "figs"
 OUT.mkdir(parents=True, exist_ok=True)
-RUNS = {"nerf": "nerf_person", "tensorf": "tensorf_person", "3dgs": "3dgs_person", "mip": "mip_person"}
+RUNS = {"nerf": "nerf_person", "tensorf": "tensorf_person", "3dgs": "3dgs_person_rand", "mip": "mip_person_rand"}
+ABLATION = {"3dgs_pcl": "3dgs_person", "mip_pcl": "mip_person", "3dgs_full_pcl": "3dgs_full"}   # started from the SP1 point cloud
 LABEL = {"gt": "Real photo (held out)", "nerf": "NeRF", "tensorf": "TensoRF", "3dgs": "3D Gaussian Splatting", "mip": "Mip-Splatting"}
 try:
     FONT = ImageFont.truetype("/usr/share/fonts/dejavu/DejaVuSans.ttf", 30)
@@ -128,7 +129,7 @@ if len(z) == 2:
          "fig_zoom.jpg", 2400)
 
 # 3. frames of the result videos (preset orbit), one row per method
-for m, run in list(RUNS.items()) + [("3dgs_full", "3dgs_full")]:
+for m, run in list(RUNS.items()) + [("3dgs_full", "3dgs_full_rand")]:
     v = SP3 / "results" / "videos" / (run + ".mp4")
     if not v.exists():
         continue
@@ -144,7 +145,7 @@ save(vcat(rows, 6), "fig_inputs.jpg", 2400)
 
 # numbers for the slides and the report
 num = {}
-for m, run in list(RUNS.items()) + [("3dgs_full", "3dgs_full")]:
+for m, run in list(RUNS.items()) + [("3dgs_full", "3dgs_full_rand")] + list(ABLATION.items()):
     f = SP3 / "runs" / run / "eval" / "metrics.json"
     if f.exists():
         d = json.load(open(f))

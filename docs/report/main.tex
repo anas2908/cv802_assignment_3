@@ -17,7 +17,7 @@
 \captionsetup{skip=3pt}
 \input{numbers.tex}
 
-\title{Novel Views of a Person from 125 Photos: TensoRF, 3D Gaussian Splatting and Mip-Splatting}
+\title{Novel Views of a Person from 125 Photos: NeRF, TensoRF, 3DGS and Mip-Splatting}
 \author{Anas Khan \quad MBZUAI \quad CV802 Sub-project 3: Novel-view Synthesis}
 
 \begin{document}
@@ -30,7 +30,7 @@
 \label{fig:teaser}\vspace{3pt}
 \begin{minipage}[t]{0.6\textwidth}\centering\resizebox{\linewidth}{!}{\input{table_main.tex}}
 \captionof{table}{Held-out photos (16, $750{\times}1000$): PSNR [dB], SSIM~\cite{wang2004ssim}, LPIPS (VGG)~\cite{zhang2018lpips},
-training minutes (the three ran side by side on one RTX~5000~Ada, so times include sharing), images per second, primitives (Gaussians or grid values), MB. Best in bold.}\label{tab:main}
+training minutes (runs shared one RTX~5000~Ada), images per second, primitives (Gaussians or network/grid values), MB. Best in bold.}\label{tab:main}
 \end{minipage}\hfill
 \begin{minipage}[t]{0.37\textwidth}\centering\resizebox{\linewidth}{!}{\input{table_zoom.tex}}
 \captionof{table}{Zoom test: PSNR\,/\,LPIPS rendered at other sizes. Truth: photo averaged down ($\frac14$) or the 1600\,px original ($1.6\times$).}\label{tab:zoom}
@@ -39,9 +39,9 @@ training minutes (the three ran side by side on one RTX~5000~Ada, so times inclu
 \thispagestyle{empty}
 
 \section{Task and data}
-Draw a person from \emph{new} viewpoints: a video along a preset path and an interactive viewer. Input: the 125 photos of Sub-projects~1--2 (four iPhone lenses, video frames) with the cameras
-Sub-project~1 recovered with VGGSfM~\cite{wang2024vggsfm}, undistorted to pinhole; person masks give a white
-background; 1000\,px. Every 8th photo (16) is held out for scoring, as in~\cite{kerbl20233dgs}.
+Draw a person from \emph{new} viewpoints (preset-path video, interactive viewer). Input: only the 125 photos
+(four iPhone lenses, video frames) and the cameras Sub-project~1 recovered with VGGSfM~\cite{wang2024vggsfm},
+undistorted; person masks give a white background; 1000\,px. Every 8th photo (16) is held out, as in~\cite{kerbl20233dgs}.
 
 \section{Methods}
 \paragraph{NeRF~\cite{mildenhall2020nerf} and TensoRF~\cite{chen2022tensorf}}
@@ -49,32 +49,33 @@ render a pixel by summing density $\sigma_i$ and colour $c_i$ along its ray, $C=
 $T_i=\prod_{j<i}e^{-\sigma_j\delta_j}$. NeRF asks one MLP ($8{\times}256$, positional encoding, coarse then fine samples);
 TensoRF a 3D feature grid factorised into planes times lines (VM decomposition) and a tiny MLP.
 \paragraph{3D Gaussian Splatting~\cite{kerbl20233dgs}}
-stores the scene as 3D Gaussians (position, covariance $\Sigma$, opacity, spherical-harmonics colour), started from
-our Sub-project~1 points and densified while training. Each is projected to a 2D Gaussian
-$\Sigma'=JW\Sigma W^\top J^\top$ (EWA splatting~\cite{zwicker2001ewa}), sorted by depth and alpha-blended; no ray
-marching, so it renders in real time.
+stores the scene as 3D Gaussians (position, covariance $\Sigma$, opacity, spherical-harmonics colour), started at
+100k random points in the scene box and densified while training. Each is projected to a 2D Gaussian
+$\Sigma'=JW\Sigma W^\top J^\top$ (EWA splatting~\cite{zwicker2001ewa}), sorted by depth and alpha-blended: real time.
 \paragraph{Mip-Splatting~\cite{yu2024mip}}
-adds a 3D smoothing filter, which limits each Gaussian's size by the training photos' sampling rate, and a 2D Mip
-filter that replaces 3DGS's fixed screen-space dilation, so that renders at other zoom levels do not alias.
+adds a 3D smoothing filter (no Gaussian finer than the photos sample) and a 2D Mip filter instead of 3DGS's fixed
+screen-space dilation, so renders at other zoom levels do not alias.
 
 All use the authors' code (NeRF: nerf-pytorch, the PyTorch port of the original), white background, 30k
 iterations; NeRF 1\,h (\NfIters\ steps; the paper 200k+). Extra: 3DGS with the room (\FullPSNR\,dB).
 
 \section{Results}
-Table~\ref{tab:main}, Fig.~\ref{fig:teaser}: the Gaussian methods are the most faithful (\GsPSNR\ and
-\MipPSNR\,dB) and draw at \GsFPS\ and \MipFPS\ images per second; the ray marchers TensoRF (\TfPSNR\,dB) and
-NeRF (\NfPSNR\,dB) are far slower to draw. At the training size 3DGS and Mip-Splatting are on par. Table~\ref{tab:zoom} tests the claim
-of~\cite{yu2024mip}: at a quarter of the size (camera moving away) 3DGS falls to \GsZoomOut\,dB, its Gaussians
-thinner than a pixel, while Mip-Splatting keeps \MipZoomOut\,dB; zoomed in ($1.6\times$) both stay close.
+Table~\ref{tab:main}, Fig.~\ref{fig:teaser}: Mip-Splatting is the most faithful (\MipPSNR\,dB, LPIPS
+\MipLPIPS). 3DGS (\GsPSNR) ties NeRF (\NfPSNR) and TensoRF (\TfPSNR\,dB) in PSNR but is far sharper (LPIPS
+\GsLPIPS\ vs \NfLPIPS, \TfLPIPS), and the Gaussian methods draw at \GsFPS--\MipFPS\ images per second while the ray
+marchers need seconds per image. Table~\ref{tab:zoom} tests the claim of~\cite{yu2024mip}: at a quarter of the size
+3DGS falls to \GsZoomOut\,dB, its Gaussians thinner than a pixel, while Mip-Splatting keeps \MipZoomOut\,dB.
+Ablation: starting from the Sub-project~1 point cloud instead of random points gives \GsPclPSNR\ (3DGS),
+\MipPclPSNR\ (Mip-Splatting) and \FullPclPSNR\,dB (room): it helps 3DGS and the room, not Mip-Splatting.
 
 \section{Interactive viewer in the starter code}
 The course's Open3D~\cite{zhou2018open3d} GUI of Sub-project~1 gains a novel-view panel, like
 Nerfstudio~\cite{tancik2023nerfstudio}: the 3D view's camera is converted to a pinhole camera, the selected model
 is rendered from it on a worker thread and shown behind the scene, so dragging, panning and zooming move the novel
-view (preview while moving, full size when still). It shows the held-out photo for comparison, exports MP4s along a preset orbit or user keyframes (Catmull-Rom positions, slerp rotations), and rasterises the
-Sub-project~2 meshes (Screened Poisson~\cite{kazhdan2013screened}) in the same view. To run on a laptop without CUDA
-we re-implemented the 3DGS/Mip-Splatting rasteriser and TensoRF's ray marching in plain PyTorch (CUDA, Apple MPS or
-CPU); they match the official renders at \GsOurs\ and \MipOurs\,dB PSNR (identical up to rounding).
+view (preview while moving, full size when still). It shows the held-out photo, exports MP4s along a preset orbit
+or keyframes (Catmull-Rom, slerp) and runs our Sub-project~2 Screened Poisson~\cite{kazhdan2013screened} on the open
+points, rasterising the mesh in the same view. For laptops without CUDA, the official renderers' inference is
+re-done in plain PyTorch (CUDA, Apple MPS, CPU); it matches them at \GsOurs\ and \MipOurs\,dB PSNR (identical).
 
 {\small
 \bibliographystyle{ieeetr}

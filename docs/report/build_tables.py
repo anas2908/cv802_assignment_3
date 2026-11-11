@@ -32,7 +32,7 @@ for k, name in ORDER:
     d = N[k]
     rows.append("%s & %s & %s & %s & %s & %s & %s & %.0f \\\\" % (
         name, cell(d["mean"]["psnr"], bp, "%.2f"), cell(d["mean"]["ssim"], bs, "%.3f"), cell(d["mean"]["lpips"], bl, "%.3f"),
-        cell(d["train_seconds"] / 60, bt / 60, "%.0f"), cell(d["fps"], bf, "%.1f") if d["fps"] < 10 else cell(d["fps"], bf, "%.0f"),
+        cell(d["train_seconds"] / 60, bt / 60, "%.0f"), cell(d["fps"], bf, "%.2f") if d["fps"] < 10 else cell(d["fps"], bf, "%.0f"),
         size(k), d["model_mb"]))
 (HERE / "table_main.tex").write_text(r"""\begin{tabular}{@{}lccccccc@{}}\toprule
 Method & PSNR$\uparrow$ & SSIM$\uparrow$ & LPIPS$\downarrow$ & Train (min) & FPS$\uparrow$ & Primitives & MB \\\midrule
@@ -50,11 +50,13 @@ if z:
                                          + "\n\\bottomrule\\end{tabular}\n")
 
 mac = []
-for k, tag in (("nerf", "Nf"), ("tensorf", "Tf"), ("3dgs", "Gs"), ("mip", "Mip"), ("3dgs_full", "Full")):
+for k, tag in (("nerf", "Nf"), ("tensorf", "Tf"), ("3dgs", "Gs"), ("mip", "Mip"), ("3dgs_full", "Full"),
+               ("3dgs_pcl", "GsPcl"), ("mip_pcl", "MipPcl"), ("3dgs_full_pcl", "FullPcl")):
     if k not in N:
         continue
     d = N[k]
     mac += ["\\newcommand{\\%sPSNR}{%.2f}" % (tag, d["mean"]["psnr"]), "\\newcommand{\\%sFPS}{%.0f}" % (tag, d["fps"]),
+            "\\newcommand{\\%sLPIPS}{%.3f}" % (tag, d["mean"]["lpips"]),
             "\\newcommand{\\%sMin}{%.0f}" % (tag, (d.get("train_seconds") or 0) / 60)]
     if "iterations" in d:
         mac.append("\\newcommand{\\%sIters}{%dk}" % (tag, round(d["iterations"] / 1000)))

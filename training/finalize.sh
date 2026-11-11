@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Main Gaussian results start from random points (the photos and cameras are the only input); the runs started from
+# the Sub-project 1 point cloud are kept as an ablation (scored earlier).
 # After training: score every model (one at a time, so the speed numbers are fair), render the result videos, export
 # results/ for the GUI, then rebuild the figures, report and slides and run the tests.  Run on the GPU node.
 set -Eeuo pipefail
@@ -10,17 +12,19 @@ trap 'status eval 0 failed "see logs/finalize.log"' ERR
 
 if [[ -z "${SKIP_EVAL:-}" ]]; then        # SKIP_EVAL=1: only re-export and rebuild (NeRF scores itself in train_nerf.py)
 status eval 5 running "3DGS: held-out photos, zoom, renderer check"
-( cd "${TP}/gaussian-splatting" && "${GS_PY}" "${CODE}/training/eval_gs.py" --method 3dgs -m "${RUNS}/3dgs_person" --check-ours --zoom \
-    --hires "${HI}" --path "${DATA}/orbit_path.json" --video "${V}/3dgs_person.mp4" )
+( cd "${TP}/gaussian-splatting" && "${GS_PY}" "${CODE}/training/eval_gs.py" --method 3dgs -m "${RUNS}/3dgs_person_rand" --check-ours --zoom \
+    --hires "${HI}" --path "${DATA}/orbit_path.json" --video "${V}/3dgs_person_rand.mp4" )
 status eval 30 running "Mip-Splatting"
-( cd "${TP}/mip-splatting" && "${MIP_PY}" "${CODE}/training/eval_gs.py" --method mip -m "${RUNS}/mip_person" --check-ours --zoom \
-    --hires "${HI}" --path "${DATA}/orbit_path.json" --video "${V}/mip_person.mp4" )
+( cd "${TP}/mip-splatting" && "${MIP_PY}" "${CODE}/training/eval_gs.py" --method mip -m "${RUNS}/mip_person_rand" --check-ours --zoom \
+    --hires "${HI}" --path "${DATA}/orbit_path.json" --video "${V}/mip_person_rand.mp4" )
 status eval 55 running "3DGS full room"
-( cd "${TP}/gaussian-splatting" && "${GS_PY}" "${CODE}/training/eval_gs.py" --method 3dgs -m "${RUNS}/3dgs_full" \
-    --path "${DATA}/orbit_path.json" --video "${V}/3dgs_full.mp4" )
+( cd "${TP}/gaussian-splatting" && "${GS_PY}" "${CODE}/training/eval_gs.py" --method 3dgs -m "${RUNS}/3dgs_full_rand" \
+    --path "${DATA}/orbit_path.json" --video "${V}/3dgs_full_rand.mp4" )
+if [[ ! -f "${RUNS}/tensorf_person/eval/metrics.json" ]]; then
 status eval 70 running "TensoRF"
 ( cd "${TP}/TensoRF" && "${GS_PY}" "${CODE}/training/eval_tensorf.py" --ckpt "${RUNS}/tensorf_person/tensorf_person.th" \
     --data "${DATA}/person" --out "${RUNS}/tensorf_person/eval" --path "${DATA}/orbit_path.json" --video "${V}/tensorf_person.mp4" )
+fi
 fi
 status eval 100 done "5 models scored"
 status videos 100 done "5 orbit videos (8 s)"
