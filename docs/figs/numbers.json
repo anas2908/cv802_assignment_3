@@ -1,0 +1,108 @@
+{
+ "tensorf": {
+  "method": "tensorf",
+  "test_views": 16,
+  "n_params": 17362163,
+  "model_mb": 66.9,
+  "fps": 0.98,
+  "resolution": [
+   750,
+   1000
+  ],
+  "mean": {
+   "psnr": 26.35214838193461,
+   "ssim": 0.9376314282417297,
+   "lpips": 0.1303423207718879
+  },
+  "video": "/l/users/anas.khan/cv802_sp3/results/videos/tensorf_person.mp4",
+  "train_seconds": 2492
+ },
+ "3dgs": {
+  "method": "3dgs",
+  "test_views": 16,
+  "n_gaussians": 194821,
+  "model_mb": 46.1,
+  "fps": 366.0,
+  "resolution": [
+   750,
+   1000
+  ],
+  "mean": {
+   "psnr": 27.52907375361866,
+   "ssim": 0.9556858167052269,
+   "lpips": 0.06394856312545016
+  },
+  "ours_vs_official_psnr": {
+   "mean": 105.7162314142023,
+   "min": 95.56300078129878
+  },
+  "ours_fps_cuda": 4.32,
+  "zoom": {
+   "x0.25": {
+    "psnr": 24.253132239623717,
+    "ssim": 0.9364587068557739,
+    "lpips": 0.04786304081790149
+   },
+   "x1.6": {
+    "psnr": 27.15232783445889,
+    "ssim": 0.9546783342957497,
+    "lpips": 0.0821396796964109
+   }
+  },
+  "video": "/l/users/anas.khan/cv802_sp3/results/videos/3dgs_person.mp4",
+  "train_seconds": 435
+ },
+ "mip": {
+  "method": "mip",
+  "test_views": 16,
+  "n_gaussians": 216802,
+  "model_mb": 52.1,
+  "fps": 594.4,
+  "resolution": [
+   750,
+   1000
+  ],
+  "mean": {
+   "psnr": 27.532925921832955,
+   "ssim": 0.9565066434442997,
+   "lpips": 0.06415388721507043
+  },
+  "ours_vs_official_psnr": {
+   "mean": 103.5302066278685,
+   "min": 79.00411135401961
+  },
+  "ours_fps_cuda": 5.78,
+  "zoom": {
+   "x0.25": {
+    "psnr": 28.6292899240785,
+    "ssim": 0.9687019102275372,
+    "lpips": 0.027701242652256042
+   },
+   "x1.6": {
+    "psnr": 27.285083454128312,
+    "ssim": 0.9568860307335854,
+    "lpips": 0.08110112638678402
+   }
+  },
+  "video": "/l/users/anas.khan/cv802_sp3/results/videos/mip_person.mp4",
+  "train_seconds": 593
+ },
+ "3dgs_full": {
+  "method": "3dgs",
+  "test_views": 16,
+  "n_gaussians": 1775737,
+  "model_mb": 420.0,
+  "fps": 97.9,
+  "resolution": [
+   750,
+   1000
+  ],
+  "mean": {
+   "psnr": 19.7113849029617,
+   "ssim": 0.7157376408576965,
+   "lpips": 0.3771258555352688
+  },
+  "video": "/l/users/anas.khan/cv802_sp3/results/videos/3dgs_full.mp4",
+  "train_seconds": 1953
+ }
+}

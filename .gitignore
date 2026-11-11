@@ -1,0 +1,11 @@
+pyrightconfig.json
+datasets/*
+!datasets/.gitkeep
+.venv/
+__pycache__/
+*.pyc
+docs/report/*.aux
+docs/report/*.log
+docs/report/*.out
+docs/report/*.bbl
+docs/report/*.blg
