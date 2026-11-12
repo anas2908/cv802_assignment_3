@@ -244,7 +244,8 @@ Training ran on a Slurm cluster with one NVIDIA RTX 5000 Ada (32 GB). Paths are 
    ```
 4. **Evaluation, videos, export, figures, report, slides and tests:** `bash training/finalize.sh`. It scores every
    model on the held-out photos (PSNR, SSIM, LPIPS-VGG), runs the zoom test and the renderer check, renders the orbit
-   videos, writes `results/` (`training/export_bundle.py`), and rebuilds `docs/`.
+   videos, writes `results/` (`training/export_bundle.py`), and rebuilds the figures, the report and a draft of the
+   slides (the submitted deck was finished by hand from that draft).
 
 **Tests** (no GPU needed): `python tests/test_nvs.py`. This renders every model on the CPU, checks the GUI's
 conversion of the Open3D view camera to an OpenCV camera (headless Open3D), and runs the Poisson mesh extraction.

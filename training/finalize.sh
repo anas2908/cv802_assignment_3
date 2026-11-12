@@ -40,6 +40,6 @@ status report 70 running "figures + LaTeX"
 ( cd "${CODE}/docs/report" && "${GS_PY}" build_tables.py && pdflatex -interaction=nonstopmode main >/dev/null && bibtex main >/dev/null \
     && pdflatex -interaction=nonstopmode main >/dev/null && pdflatex -interaction=nonstopmode main | grep "Output written" )
 status report 100 done "docs/report/main.pdf"
-status slides 70 running "building pptx"
+status slides 70 running "building the draft deck"
 "${DOCS_PY}" "${CODE}/docs/slides/build_slides.py"
-status slides 100 done "docs/slides/*.pptx"
+status slides 100 done "docs/slides/CV802_SP3_slides_draft.pptx"

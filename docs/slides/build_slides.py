@@ -19,7 +19,8 @@ from lxml import etree
 
 HERE = Path(__file__).resolve().parent
 FIG = HERE.parent / "figs"
-OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else HERE / "CV802_SP3_novel_view_synthesis.pptx"
+# writes a draft: the submitted deck (CV802_SP3_novel_view_synthesis.pptx/.pdf) was finished by hand from it
+OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else HERE / "CV802_SP3_slides_draft.pptx"
 N = json.load(open(FIG / "numbers.json"))
 BLACK, GREY, LINE = RGBColor(0, 0, 0), RGBColor(0x59, 0x59, 0x59), RGBColor(0xBF, 0xC5, 0xCC)
 PIE = ["4285F4", "DB4437", "F4B400", "0F9D58", "AB47BC", "00ACC1", "FF7043", "9E9D24", "5C6BC0"]
