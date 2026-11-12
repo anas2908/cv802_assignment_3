@@ -38,12 +38,12 @@ training minutes (runs shared one RTX~5000~Ada), images per second, primitives (
 \end{center}\vspace{-6pt}}]
 \thispagestyle{empty}
 
-\section{Task and data}
-Draw a person from \emph{new} viewpoints (preset-path video, interactive viewer). Input: only the 125 photos
+\section{What we did}
+We draw a person from \emph{new} viewpoints (preset-path video, interactive viewer). Input: only the 125 photos
 (four iPhone lenses, video frames) and the cameras Sub-project~1 recovered with VGGSfM~\cite{wang2024vggsfm},
 undistorted; person masks give a white background; 1000\,px. Every 8th photo (16) is held out, as in~\cite{kerbl20233dgs}.
 
-\section{Methods}
+\section{How}
 \paragraph{NeRF~\cite{mildenhall2020nerf} and TensoRF~\cite{chen2022tensorf}}
 render a pixel by summing density $\sigma_i$ and colour $c_i$ along its ray, $C=\sum_i T_i(1-e^{-\sigma_i\delta_i})c_i$,
 $T_i=\prod_{j<i}e^{-\sigma_j\delta_j}$. NeRF asks one MLP ($8{\times}256$, positional encoding, coarse then fine samples);
@@ -68,15 +68,14 @@ marchers need seconds per image. Table~\ref{tab:zoom} tests the claim of~\cite{y
 Ablation: starting from the Sub-project~1 point cloud instead of random points gives \GsPclPSNR\ (3DGS),
 \MipPclPSNR\ (Mip-Splatting) and \FullPclPSNR\,dB (room): it helps 3DGS and the room, not Mip-Splatting.
 
-\section{Discussion and conclusion}
-All four methods recreate the person convincingly from viewpoints no photo was taken from, using only the photos
-and their cameras. They differ in sharpness and speed rather than in shape: the Gaussian methods keep fine detail
-such as the shirt print and the face and can be explored in real time, while NeRF and TensoRF give softer images
-and take a second or more per image. For a capture like ours, Mip-Splatting is the method to choose: the best
-scores, real-time rendering, stable quality when the camera moves closer or further away, and no need for a
-starting point cloud. The limits are coverage and time: what the photos rarely see, such as the room around the
-person, cannot be recovered, and NeRF would need far longer training to catch up.
+\section{What we learned}
+\textbf{(1) Gaussians suit this task:} they keep the shirt print and the face sharp and render in real time, while
+the ray marchers give softer images at a second or more each. \textbf{(2) Mip-Splatting is the one to use:} best on
+every score and at every zoom level. \textbf{(3) Photos and cameras are enough:} from random points every method
+learns the person; a point cloud only helps where photos are scarce, as in the room. \textbf{(4) Coverage and time
+set the limits:} what no photo sees cannot be recovered, and NeRF needs far more than one hour of training.
 
+\clearpage   % content on page 1, references on page 2
 {\small
 \bibliographystyle{ieeetr}
 \bibliography{refs}
