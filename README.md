@@ -33,7 +33,7 @@ camera path, and also runs the Sub-project 2 surface reconstruction.
 
 ![A sample of the 125 input photos](docs/figs/fig_inputs.jpg)
 
-**The input is images only**, as instructed by the course TA: the 125 photos of one person (four iPhone lenses
+**The input is images only**, as instructed: the 125 photos of one person (four iPhone lenses
 plus frames of a video), with the camera poses and intrinsics recovered from them in Sub-project 1 (VGGSfM). No point
 cloud from Sub-project 1 is used to build the models.
 
@@ -42,7 +42,7 @@ cloud from Sub-project 1 is used to build the models.
 - **Split:** every 8th photo is held out for testing (16 photos), and the other 109 are used for training. This is
   the `--eval` rule of the 3DGS and Mip-Splatting code.
 - **NeRF and TensoRF** need no 3D points. They learn density and colour along the camera rays.
-- **3DGS and Mip-Splatting start from dense random points**, following the TA's guidance. 100,000 points are drawn
+- **3DGS and Mip-Splatting start from dense random points**, as instructed. 100,000 points are drawn
   uniformly at random inside the person's bounding box (300,000 inside the room box for the room scene), all grey
   ([`training/make_random_init.py`](training/make_random_init.py)). This is also the 3DGS authors' setting for
   their synthetic scenes. During training, densification grows them to 149k (3DGS), 197k (Mip-Splatting) and
