@@ -34,7 +34,7 @@ camera path, and also runs the Sub-project 2 surface reconstruction.
 ![A sample of the 125 input photos](docs/figs/fig_inputs.jpg)
 
 **The input is images only**, as instructed: the 125 photos of one person (four iPhone lenses
-plus frames of a video), with the camera poses and intrinsics recovered from them in Sub-project 1 (VGGSfM). No point
+plus frames of a video), with the camera poses and intrinsics recovered from them in Sub-project 1. No point
 cloud from Sub-project 1 is used to build the models.
 
 - The photos are undistorted with the Sub-project 1 cameras and scaled to 750×1000 px. For the main (person) scene,
@@ -222,7 +222,7 @@ Training ran on a Slurm cluster with one NVIDIA RTX 5000 Ada (32 GB). Paths are 
    rasteriser and also runs TensoRF and NeRF. The `mip` environment holds Mip-Splatting's rasteriser.
 2. **Data:**
    - The photos are `datasets/light_shirt/images` in the
-     [Sub-project 1 repository](https://github.com/anas2908/cv802_ass1), with the VGGSfM cameras of Sub-project 1.
+     [Sub-project 1 repository](https://github.com/anas2908/cv802_ass1), with the cameras of Sub-project 1.
    - Sub-project 2's `surface/methods/twodgs/prep.py`
      ([repository](https://github.com/anas2908/cv802_assignment_2)) undistorts them and applies the person masks.
    - Then:
@@ -274,15 +274,13 @@ tests/                     Sub-project 1 SfM tests, Sub-project 3 renderer / cam
    Rendering.* ACM Transactions on Graphics (SIGGRAPH) 2023.
 4. Z. Yu, A. Chen, B. Huang, T. Sattler, A. Geiger. *Mip-Splatting: Alias-free 3D Gaussian Splatting.* CVPR 2024.
 5. M. Zwicker, H. Pfister, J. van Baar, M. Gross. *EWA Volume Splatting.* IEEE Visualization 2001.
-6. J. Wang, N. Karaev, C. Rupprecht, D. Novotny. *VGGSfM: Visual Geometry Grounded Deep Structure from Motion.*
-   CVPR 2024.
-7. M. Kazhdan, H. Hoppe. *Screened Poisson Surface Reconstruction.* ACM Transactions on Graphics 2013.
-8. Z. Wang, A. C. Bovik, H. R. Sheikh, E. P. Simoncelli. *Image Quality Assessment: From Error Visibility to
+6. M. Kazhdan, H. Hoppe. *Screened Poisson Surface Reconstruction.* ACM Transactions on Graphics 2013.
+7. Z. Wang, A. C. Bovik, H. R. Sheikh, E. P. Simoncelli. *Image Quality Assessment: From Error Visibility to
    Structural Similarity.* IEEE Transactions on Image Processing 2004.
-9. R. Zhang, P. Isola, A. A. Efros, E. Shechtman, O. Wang. *The Unreasonable Effectiveness of Deep Features as a
+8. R. Zhang, P. Isola, A. A. Efros, E. Shechtman, O. Wang. *The Unreasonable Effectiveness of Deep Features as a
    Perceptual Metric.* CVPR 2018.
-10. Q.-Y. Zhou, J. Park, V. Koltun. *Open3D: A Modern Library for 3D Data Processing.* arXiv 2018.
-11. M. Tancik et al. *Nerfstudio: A Modular Framework for Neural Radiance Field Development.* SIGGRAPH 2023.
+9. Q.-Y. Zhou, J. Park, V. Koltun. *Open3D: A Modern Library for 3D Data Processing.* arXiv 2018.
+10. M. Tancik et al. *Nerfstudio: A Modular Framework for Neural Radiance Field Development.* SIGGRAPH 2023.
 
 **Acknowledgements.** The GUI is the CV802 course starter code. Training uses the official implementations listed
 under [Methods](#methods), which are cloned at run time and not included here, so their licences apply to them.
