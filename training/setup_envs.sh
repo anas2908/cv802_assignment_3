@@ -13,9 +13,11 @@ clone() {  # clone <url> <dir> [commit]: pin to a commit when given, and record 
   echo "$(basename "$2") $(git -C "$2" rev-parse --short HEAD)" >> "${TP}/versions.txt"
 }
 : > "${TP}/versions.txt"
-clone https://github.com/graphdeco-inria/gaussian-splatting "${TP}/gaussian-splatting" "${GS_COMMIT:-}"
-clone https://github.com/autonomousvision/mip-splatting "${TP}/mip-splatting" "${MIP_COMMIT:-}"
-clone https://github.com/apchenstu/TensoRF "${TP}/TensoRF" "${TENSORF_COMMIT:-}"
+# the commits the results were trained with (override with GS_COMMIT=... etc.)
+clone https://github.com/graphdeco-inria/gaussian-splatting "${TP}/gaussian-splatting" "${GS_COMMIT:-54c035f}"
+clone https://github.com/autonomousvision/mip-splatting "${TP}/mip-splatting" "${MIP_COMMIT:-dda02ab}"
+clone https://github.com/apchenstu/TensoRF "${TP}/TensoRF" "${TENSORF_COMMIT:-6a1e23b}"
+clone https://github.com/yenchenlin/nerf-pytorch "${TP}/nerf-pytorch" "${NERF_COMMIT:-63a5a63}"   # NeRF (pure PyTorch, gs env)
 
 NVCC_DIR=""
 for d in /apps/local/cuda-12.2/bin /usr/local/cuda-12.2/bin /usr/local/cuda/bin $(ls -d /apps/local/cuda*/bin 2>/dev/null | sort -r); do

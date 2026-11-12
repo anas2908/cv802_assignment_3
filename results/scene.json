@@ -4029,7 +4029,7 @@
     1.0,
     1.0
    ],
-   "size_mb": 4.2
+   "size_mb": 4.4
   },
   "3dgs": {
    "label": "3D Gaussian Splatting",
@@ -4040,7 +4040,9 @@
     1.0,
     1.0
    ],
-   "size_mb": 16.0
+   "size_mb": 9.6,
+   "gaussians": 145798,
+   "dropped_invisible": 3486
   },
   "mip": {
    "label": "Mip-Splatting",
@@ -4051,7 +4053,9 @@
     1.0,
     1.0
    ],
-   "size_mb": 21.6
+   "size_mb": 12.5,
+   "gaussians": 187528,
+   "dropped_invisible": 9313
   },
   "tensorf": {
    "label": "TensoRF",
@@ -4062,7 +4066,7 @@
     1.0,
     1.0
    ],
-   "size_mb": 29.0
+   "size_mb": 6.2
   },
   "3dgs_full": {
    "label": "3DGS, full room (extra)",
@@ -4073,8 +4077,10 @@
     0.0,
     0.0
    ],
-   "size_mb": 41.1,
-   "note": "stored with spherical harmonics up to degree 1 to stay under GitHub's file limit"
+   "size_mb": 25.0,
+   "gaussians": 875255,
+   "dropped_invisible": 34416,
+   "note": "spherical harmonics up to degree 1 only (the trained model has degree 3), to keep the repository small"
   }
  },
  "meshes": [
@@ -4106,8 +4112,8 @@
     "ssim": 0.930945560336113,
     "lpips": 0.13178013172000647
    },
-   "video": "/l/users/anas.khan/cv802_sp3/results/videos/nerf_person.mp4",
-   "train_seconds": 3600
+   "train_seconds": 3600,
+   "run": "nerf_person"
   },
   "3dgs": {
    "method": "3dgs",
@@ -4141,8 +4147,8 @@
      "lpips": 0.08954741794150323
     }
    },
-   "video": "/l/users/anas.khan/cv802_sp3/results/videos/3dgs_person_rand.mp4",
-   "train_seconds": 935
+   "train_seconds": 935,
+   "run": "3dgs_person_rand"
   },
   "mip": {
    "method": "mip",
@@ -4176,8 +4182,8 @@
      "lpips": 0.08374484861269593
     }
    },
-   "video": "/l/users/anas.khan/cv802_sp3/results/videos/mip_person_rand.mp4",
-   "train_seconds": 1839
+   "train_seconds": 1839,
+   "run": "mip_person_rand"
   },
   "tensorf": {
    "method": "tensorf",
@@ -4194,8 +4200,8 @@
     "ssim": 0.9376314282417297,
     "lpips": 0.1303423207718879
    },
-   "video": "/l/users/anas.khan/cv802_sp3/results/videos/tensorf_person.mp4",
-   "train_seconds": 2492
+   "train_seconds": 2492,
+   "run": "tensorf_person"
   },
   "3dgs_full": {
    "method": "3dgs",
@@ -4212,15 +4218,35 @@
     "ssim": 0.6714446432888508,
     "lpips": 0.4406001064926386
    },
-   "video": "/l/users/anas.khan/cv802_sp3/results/videos/3dgs_full_rand.mp4",
-   "train_seconds": 2086
+   "train_seconds": 2086,
+   "run": "3dgs_full_rand"
   }
  },
- "conversion_check_psnr": {
-  "nerf": 66.9,
-  "3dgs": 67.5,
-  "mip": 67.3,
-  "tensorf": 64.8,
-  "3dgs_full": 26.0
+ "packed_vs_official_psnr": {
+  "nerf": {
+   "min": 103.4,
+   "mean": 106.7,
+   "views": 4
+  },
+  "3dgs": {
+   "min": 63.0,
+   "mean": 67.1,
+   "views": 4
+  },
+  "mip": {
+   "min": 62.9,
+   "mean": 66.8,
+   "views": 4
+  },
+  "tensorf": {
+   "min": 57.1,
+   "mean": 62.8,
+   "views": 4
+  },
+  "3dgs_full": {
+   "min": 25.1,
+   "mean": 26.1,
+   "views": 4
+  }
  }
 }

@@ -20,6 +20,8 @@ from pathlib import Path
 import numpy as np
 import torch
 
+from .packing import unpack
+
 SH_C0 = 0.28209479177387814
 SH_C1 = 0.4886025119029199
 SH_C2 = (1.0925484305920792, -1.0925484305920792, 0.31539156525252005, -1.0925484305920792, 0.5462742152960396)
@@ -83,9 +85,14 @@ class GaussianModel:
     def load(cls, path, kind=None, device=None):
         path = Path(path)
         if path.suffix == ".npz":
-            z = np.load(path)
-            kind = kind or str(z["kind"]) if "kind" in z else (kind or "3dgs")
-            return cls(z["means"], z["scales"], z["rots"], z["opacity"], z["sh"],
+            z = unpack(np.load(path))                  # packed files (8/16-bit codes) or plain arrays
+            kind = kind or (str(z["kind"]) if "kind" in z else "3dgs")
+            if "sh" in z:
+                sh = z["sh"]
+            else:                                      # colour stored as SH degree 0 + the higher bands (N, 3*(K-1))
+                dc = np.asarray(z["sh_dc"], np.float32).reshape(-1, 1, 3)
+                sh = dc if "sh_rest" not in z else np.concatenate([dc, z["sh_rest"].reshape(len(dc), -1, 3)], 1)
+            return cls(z["means"], z["scales"], z["rots"], z["opacity"], sh,
                        z["filter_3d"] if "filter_3d" in z else None, kind, device)
         v = read_ply_vertices(path)
         names = v.dtype.names
@@ -99,10 +106,6 @@ class GaussianModel:
         rots = np.stack([v["rot_%d" % i] for i in range(4)], 1)
         filt = v["filter_3D"][:, None] if "filter_3D" in names else None
         return cls(means, scales, rots, v["opacity"][:, None], sh, filt, kind or ("mip" if filt is not None else "3dgs"), device)
-
-    def save_npz(self, path, raw):
-        """raw: dict of the stored (un-activated) arrays, as read by load(); float16 halves the size."""
-        np.savez_compressed(path, kind=self.kind, **{k: np.asarray(a, np.float16) for k, a in raw.items()})
 
     def _covariance(self):
         w, x, y, z = self.quat.unbind(1)

@@ -417,5 +417,11 @@ refs = ["B. Mildenhall et al. NeRF: Representing Scenes as Neural Radiance Field
         "M. Tancik et al. Nerfstudio: A Modular Framework for Neural Radiance Field Development. SIGGRAPH 2023."]
 text(s, "\n".join("[%d] %s" % (i + 1, r) for i, r in enumerate(refs)), 0.42, 1.0, 9.2, 4.2, size=11)
 
+import datetime  # noqa: E402
+cp = prs.core_properties
+cp.title, cp.subject = "CV802 Sub-project 3: Novel-View Synthesis", "NeRF, TensoRF, 3DGS and Mip-Splatting"
+cp.author = cp.last_modified_by = "Anas Khan"
+cp.comments, cp.revision = "", 1
+cp.created = cp.modified = datetime.datetime.now().replace(microsecond=0)
 prs.save(OUT)
 print("saved", OUT, count[0], "slides")

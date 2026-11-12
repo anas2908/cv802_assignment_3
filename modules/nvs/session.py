@@ -2,11 +2,13 @@
 
 A results folder (made by training/export_bundle.py) holds:
   scene.json        photo cameras (train/test), scene centre and up direction, list of models, metrics
-  models/*.npz      trained models: 3DGS / Mip-Splatting Gaussians, TensoRF planes and lines
-  points.ply        the person's point cloud (for orientation in the 3D view)
+  models/*.npz      trained models (packed, see packing.py): Gaussians, TensoRF planes and lines, NeRF weights
+  points.ply        the person's point cloud (for orientation in the 3D view and the GUI's mesh extraction)
   orbit_path.json   the preset camera path of the result videos
   photos/*.jpg      the held-out photos, to compare a render with the real photo
   meshes/           Sub-project 2 meshes (rasterised by the GUI)
+  videos/*.mp4      the result videos along the preset path
+  metrics.json      every run's scores (main runs and the point-cloud-start ablation, per photo)
 """
 from __future__ import annotations
 

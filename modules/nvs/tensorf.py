@@ -15,6 +15,7 @@ import torch
 import torch.nn.functional as F
 
 from .gaussians import best_device
+from .packing import unpack
 
 MAT = [[0, 1], [0, 2], [1, 2]]
 VEC = [2, 1, 0]
@@ -59,7 +60,7 @@ class TensoRFModel:
     def load(cls, path, device=None):
         path = Path(path)
         if path.suffix == ".npz":
-            return cls(dict(np.load(path)), device)
+            return cls(unpack(np.load(path)), device)          # packed (8-bit planes) or plain arrays
         return cls(convert_checkpoint(path), device)
 
     # ---------------------------------------------------------------- fields
