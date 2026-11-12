@@ -68,14 +68,14 @@ marchers need seconds per image. Table~\ref{tab:zoom} tests the claim of~\cite{y
 Ablation: starting from the Sub-project~1 point cloud instead of random points gives \GsPclPSNR\ (3DGS),
 \MipPclPSNR\ (Mip-Splatting) and \FullPclPSNR\,dB (room): it helps 3DGS and the room, not Mip-Splatting.
 
-\section{Interactive viewer in the starter code}
-The course's Open3D~\cite{zhou2018open3d} GUI of Sub-project~1 gains a novel-view panel, like
-Nerfstudio~\cite{tancik2023nerfstudio}: the 3D view's camera is converted to a pinhole camera, the selected model
-is rendered from it on a worker thread and shown behind the scene, so dragging, panning and zooming move the novel
-view (preview while moving, full size when still). It shows the held-out photo, exports MP4s along a preset orbit
-or keyframes (Catmull-Rom, slerp) and runs our Sub-project~2 Screened Poisson~\cite{kazhdan2013screened} on the open
-points, rasterising the mesh in the same view. For laptops without CUDA, the official renderers' inference is
-re-done in plain PyTorch (CUDA, Apple MPS, CPU); it matches them at \GsOurs\ and \MipOurs\,dB PSNR (identical).
+\section{Discussion and conclusion}
+All four methods recreate the person convincingly from viewpoints no photo was taken from, using only the photos
+and their cameras. They differ in sharpness and speed rather than in shape: the Gaussian methods keep fine detail
+such as the shirt print and the face and can be explored in real time, while NeRF and TensoRF give softer images
+and take a second or more per image. For a capture like ours, Mip-Splatting is the method to choose: the best
+scores, real-time rendering, stable quality when the camera moves closer or further away, and no need for a
+starting point cloud. The limits are coverage and time: what the photos rarely see, such as the room around the
+person, cannot be recovered, and NeRF would need far longer training to catch up.
 
 {\small
 \bibliographystyle{ieeetr}
