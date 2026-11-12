@@ -14,8 +14,8 @@ camera path, and also runs the Sub-project 2 surface reconstruction.
 
 | Deliverable | Where |
 |---|---|
-| Report (CVPR style: one page + references) | [`docs/report/main.pdf`](docs/report/main.pdf) (LaTeX source alongside) |
-| Slides | [`docs/slides/CV802_SP3_novel_view_synthesis.pdf`](docs/slides/CV802_SP3_novel_view_synthesis.pdf) and [`.pptx`](docs/slides/CV802_SP3_novel_view_synthesis.pptx) |
+| Report (CVPR style: one page + references) | [`report.pdf`](report.pdf) (same as [`docs/report/main.pdf`](docs/report/main.pdf), LaTeX source alongside) |
+| Slides | [`slides.pdf`](slides.pdf) (same as [`docs/slides/`](docs/slides/) PDF; the `.pptx` is there too) |
 | Result videos along a preset camera path | [`results/videos/`](results/videos/) (one MP4 per method, 8 s orbit) |
 | Interactive viewer (starter GUI, extended) | `bash run_gui.sh` → [Interactive viewer](#interactive-viewer-built-on-the-course-starter-gui) |
 | Trained models, cameras, held-out photos | [`results/`](results/) |
